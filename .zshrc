@@ -8,72 +8,125 @@ BASE16_SHELL="$HOME/.config/base16-shell/base16-ocean.dark.sh"
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="dogenpunk"
+ZSH_THEME="bira"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(wd sudo web-search)
+plugins=(j wd sudo zsh-autosuggestions colorize autojump)
+
+eval $(thefuck --alias)
 
 # User configuration
 # Development
 # Git shit
 gl() {
-    if [ $1 ] ; then
-        git log --oneline "$1" ;
-     else
-        git log --oneline -20
-     fi
+	if [ $1 ] ; then
+		git log --oneline "$1" ;
+	 else
+		git log --oneline -20
+	 fi
 }
 alias gs='git status -sbu'
 alias ga='git add -A'
+alias gm='git merge'
+alias gd='git diff'
+alias gds='git diff --stat'
+
+rk() {
+osascript - "$@" <<EOF
+on run argv
+
+tell application "iTerm"
+
+	tell current window
+		set firstSession to (current session)
+		create tab with default profile
+	end tell
+
+	tell current session of current window
+		split vertically with same profile
+	end tell
+
+	tell session 1 of current tab of current window
+		write text "wd rk"
+		write text "nodemon app.js"
+	end tell
+
+	tell session 2 of current tab of current window
+		write text "wd rk"
+		write text "gulp watch"
+	end tell
+
+end tell
+
+end run
+EOF
+}
+
 gc() {
-    git commit -m "$1"
+	git commit -m "$1"
 }
 
 alias ngrok='/usr/local/ngrok'
 
 dt() {
+	DEV_PATH="$HOME/dev/dt_local"
+	RETURN_PATH=$(pwd)
 
-    DEV_PATH="$HOME/dev/dt_local"
+	if [ -z $1 ] ; then
+		echo "☠  No arguments passed."
+	fi
 
-    if [ -z $1 ] ; then
-        echo "☠  No arguments passed."
-    fi
+	if [[ $1 == up ]] ; then
+		cd $DEV_PATH
+		vagrant up
+		cd $RETURN_PATH
+	fi
 
-    # check out logs
-    if [[ $1 == logs ]] ; then
-        cd $DEV_PATH/logs/dt
-    fi
+	if [[ $1 == reload ]] ; then
+		cd $DEV_PATH
+		vagrant reload
+		cd $RETURN_PATH
+	fi
 
-    # do tests
-    if [[ $1 == tests ]] ; then
-        cd $DEV_PATH
-        vagrant rake dt:phpunit
-    fi
+	if [[ $1 == halt ]] ; then
+		cd $DEV_PATH
+		vagrant halt
+		cd $RETURN_PATH
+	fi
 
-    # build js
-    if [[ $1 == js ]] ; then
-        cd $DEV_PATH/src/websites/www.digitaltrends.com
-        gulp dt:js
-    fi
+	# do tests
+	if [[ $1 == tests ]] ; then
+		cd $DEV_PATH
+		vagrant rake dt:phpunit
+		cd $RETURN_PATH
+	fi
 
-    # build css
-    if [[ $1 == css ]] ; then
-        cd $DEV_PATH/src/websites/www.digitaltrends.com
-        gulp dt:optimize:css
-    fi
+	# build js
+	if [[ $1 == js ]] ; then
+		cd $DEV_PATH/src/websites/www.digitaltrends.com
+		gulp dt:js
+		cd $RETURN_PATH
+	fi
 
+	# build css
+	if [[ $1 == css ]] ; then
+		cd $DEV_PATH/src/websites/www.digitaltrends.com
+		gulp dt:optimize:css
+		cd $RETURN_PATH
+	fi
 }
 
+alias gbs='wd dt-burnside && gulp && wd dt && gulp dt:js'
 
 # mcd: Makes new directory and jumps into it
 mcd () { mkdir -p "$1" && cd "$1"; }
 
 # gulp shortcut
 g () {
-    gulp "$1";
+	gulp "$1";
 }
 
 alias cd..='cd ../'                         # Go back 1 directory
@@ -89,24 +142,24 @@ alias c='clear'                             # c:            Clear
 alias flushDNS='dscacheutil -flushcache'            # flushDNS:
 
 extract () {
-    if [ -f $1 ] ; then
-      case $1 in
-        *.tar.bz2)   tar xjf $1     ;;
-        *.tar.gz)    tar xzf $1     ;;
-        *.bz2)       bunzip2 $1     ;;
-        *.rar)       unrar e $1     ;;
-        *.gz)        gunzip $1      ;;
-        *.tar)       tar xf $1      ;;
-        *.tbz2)      tar xjf $1     ;;
-        *.tgz)       tar xzf $1     ;;
-        *.zip)       unzip $1       ;;
-        *.Z)         uncompress $1  ;;
-        *.7z)        7z x $1        ;;
-        *)     echo "'$1' cannot be extracted via extract()" ;;
-         esac
-     else
-         echo "'$1' is not a valid file"
-     fi
+	if [ -f $1 ] ; then
+	  case $1 in
+		*.tar.bz2)   tar xjf $1     ;;
+		*.tar.gz)    tar xzf $1     ;;
+		*.bz2)       bunzip2 $1     ;;
+		*.rar)       unrar e $1     ;;
+		*.gz)        gunzip $1      ;;
+		*.tar)       tar xf $1      ;;
+		*.tbz2)      tar xjf $1     ;;
+		*.tgz)       tar xzf $1     ;;
+		*.zip)       unzip $1       ;;
+		*.Z)         uncompress $1  ;;
+		*.7z)        7z x $1        ;;
+		*)     echo "'$1' cannot be extracted via extract()" ;;
+		 esac
+	 else
+		 echo "'$1' is not a valid file"
+	 fi
 }
 
 export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/git/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/"
