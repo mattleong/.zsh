@@ -1,9 +1,6 @@
 # Path to your oh-my-zsh installation.
 export ZSH=/Users/matt/.oh-my-zsh
 
-BASE16_SHELL="$HOME/.config/base16-shell/base16-ocean.dark.sh"
-[[ -s $BASE16_SHELL ]] && source $BASE16_SHELL
-
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
@@ -14,9 +11,11 @@ ZSH_THEME="bira"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(j wd sudo zsh-autosuggestions colorize autojump)
+plugins=(j wd sudo zsh-autosuggestions)
 
-eval $(thefuck --alias)
+#disable update prompt
+DISABLE_UPDATE_PROMPT=true
+SAVEHIST=1000
 
 # User configuration
 # Development
@@ -33,6 +32,11 @@ alias ga='git add -A'
 alias gm='git merge'
 alias gd='git diff'
 alias gds='git diff --stat'
+alias gca='git commit --amend'
+
+gc() {
+	git commit -m "$1"
+}
 
 rk() {
 osascript - "$@" <<EOF
@@ -41,17 +45,17 @@ on run argv
 tell application "iTerm"
 
 	tell current window
-		set firstSession to (current session)
 		create tab with default profile
 	end tell
 
 	tell current session of current window
 		split vertically with same profile
+		split vertically with same profile
 	end tell
 
 	tell session 1 of current tab of current window
 		write text "wd rk"
-		write text "nodemon app.js"
+		write text "code ."
 	end tell
 
 	tell session 2 of current tab of current window
@@ -59,14 +63,15 @@ tell application "iTerm"
 		write text "gulp watch"
 	end tell
 
+	tell session 3 of current tab of current window
+		write text "wd rk"
+		write text "nodemon app.js"
+	end tell
+
 end tell
 
 end run
 EOF
-}
-
-gc() {
-	git commit -m "$1"
 }
 
 alias ngrok='/usr/local/ngrok'
@@ -119,15 +124,10 @@ dt() {
 	fi
 }
 
-alias gbs='wd dt-burnside && gulp && wd dt && gulp dt:js'
+alias gbs='wd bs && gulp && wd dt && dt js'
 
 # mcd: Makes new directory and jumps into it
 mcd () { mkdir -p "$1" && cd "$1"; }
-
-# gulp shortcut
-g () {
-	gulp "$1";
-}
 
 alias cd..='cd ../'                         # Go back 1 directory
 # level (for fast typers)
@@ -164,7 +164,9 @@ extract () {
 
 export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/git/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/"
 
+export NVM_DIR="/Users/matt/.nvm"
+alias loadrvm='[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"'
+alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
+
 source $ZSH/oh-my-zsh.sh
 
-export NVM_DIR="/Users/matt/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
