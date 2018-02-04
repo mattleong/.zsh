@@ -1,6 +1,8 @@
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
 
+export EDITOR=vim
+
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
@@ -160,7 +162,7 @@ extract () {
 	 fi
 }
 
-export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/git/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/:~/.npm-global/bin"
+export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/git/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/:~/.npm-global/bin:~/apps"
 
 export NVM_DIR="~/.nvm"
 alias loadrvm='[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"'
