@@ -13,7 +13,9 @@ ZSH_THEME="bira"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(j wd sudo zsh-autosuggestions)
+plugins=(wd sudo zsh-autosuggestions ssh-agent)
+
+zstyle :omz:plugins:ssh-agent identities scout_22 scout_22.pub
 
 #disable update prompt
 DISABLE_UPDATE_PROMPT=true
@@ -40,44 +42,8 @@ gc() {
 	git commit -m "$1"
 }
 
-rk() {
-osascript - "$@" <<EOF
-on run argv
-
-tell application "iTerm"
-
-	tell current window
-		create tab with default profile
-	end tell
-
-	tell current session of current window
-		split vertically with same profile
-		split vertically with same profile
-	end tell
-
-	tell session 1 of current tab of current window
-		write text "wd rk"
-		write text "code ."
-	end tell
-
-	tell session 2 of current tab of current window
-		write text "wd rk"
-		write text "gulp watch"
-	end tell
-
-	tell session 3 of current tab of current window
-		write text "wd rk"
-		write text "nodemon app.js"
-	end tell
-
-end tell
-
-end run
-EOF
-}
-
 dt() {
-	DEV_PATH="$HOME/dev/dt_local"
+	DEV_PATH="$HOME/digitaltrends/developer"
 	RETURN_PATH=$(pwd)
 
 	if [ -z $1 ] ; then
@@ -86,19 +52,19 @@ dt() {
 
 	if [[ $1 == up ]] ; then
 		cd $DEV_PATH
-		vagrant up
+		docker-compose start
 		cd $RETURN_PATH
 	fi
 
 	if [[ $1 == reload ]] ; then
 		cd $DEV_PATH
-		vagrant reload
+		docker-compose restart
 		cd $RETURN_PATH
 	fi
 
 	if [[ $1 == halt ]] ; then
 		cd $DEV_PATH
-		vagrant halt
+		docker-compose stop
 		cd $RETURN_PATH
 	fi
 
@@ -109,22 +75,14 @@ dt() {
 		cd $RETURN_PATH
 	fi
 
-	# build js
-	if [[ $1 == js ]] ; then
+	# build
+	if [[ $1 == build ]] ; then
 		cd $DEV_PATH/src/websites/www.digitaltrends.com
-		gulp dt:js
-		cd $RETURN_PATH
-	fi
-
-	# build css
-	if [[ $1 == css ]] ; then
-		cd $DEV_PATH/src/websites/www.digitaltrends.com
-		gulp dt:optimize:css
+		gulp clean
+		gulp
 		cd $RETURN_PATH
 	fi
 }
-
-alias gbs='wd bs && gulp && wd dt && dt js'
 
 # mcd: Makes new directory and jumps into it
 mcd () { mkdir -p "$1" && cd "$1"; }
@@ -162,7 +120,9 @@ extract () {
 	 fi
 }
 
-export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/git/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/:~/.npm-global/bin:~/apps"
+source ~/digitaltrends/developer/bash_functions
+
+export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/git/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/bin:/usr/sbin:/sbin:~/.npm-global/bin:~/apps"
 
 export NVM_DIR="~/.nvm"
 alias loadrvm='[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"'
