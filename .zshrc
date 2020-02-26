@@ -13,20 +13,18 @@ ZSH_THEME="bira"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(wd sudo zsh-autosuggestions ssh-agent)
-
-zstyle :omz:plugins:ssh-agent identities scout_22 scout_22.pub
+plugins=(wd sudo docker)
 
 #disable update prompt
 DISABLE_UPDATE_PROMPT=true
-SAVEHIST=1000
+SAVEHIST=10000
 
 # User configuration
 # Development
 # Git shit
 gl() {
 	if [ $1 ] ; then
-		git log --oneline "$1" ;
+		git log --oneline -"$1" ;
 	 else
 		git log --oneline -20
 	 fi
@@ -37,49 +35,62 @@ alias gm='git merge'
 alias gd='git diff'
 alias gds='git diff --stat'
 alias gca='git commit --amend'
+alias gbn='git branch -b'
+alias glg='git log --graph --abbrev-commit --decorate --format=format:"%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)" --all'
 
 gc() {
 	git commit -m "$1"
 }
 
 dt() {
-	DEV_PATH="$HOME/digitaltrends/developer"
+	DEV_PATH="$HOME/dev/dtenv"
 	RETURN_PATH=$(pwd)
 
 	if [ -z $1 ] ; then
 		echo "☠  No arguments passed."
 	fi
 
-	if [[ $1 == up ]] ; then
+	if [[ $1 == refresh ]] ; then
 		cd $DEV_PATH
-		docker-compose start
+    rake env:refresh
 		cd $RETURN_PATH
 	fi
 
-	if [[ $1 == reload ]] ; then
-		cd $DEV_PATH
-		docker-compose restart
-		cd $RETURN_PATH
-	fi
-
-	if [[ $1 == halt ]] ; then
+	if [[ $1 == stop ]] ; then
 		cd $DEV_PATH
 		docker-compose stop
 		cd $RETURN_PATH
+  fi
+
+	# build
+	if [[ $1 == js ]] ; then
+		cd $DEV_PATH
+    rake wp:gulp -- js
+		cd $RETURN_PATH
+	fi
+  
+	if [[ $1 == version ]] ; then
+		cd $DEV_PATH
+    rake wp:gulp -- version
+		cd $RETURN_PATH
 	fi
 
-	# do tests
-	if [[ $1 == tests ]] ; then
+	if [[ $1 == css ]] ; then
 		cd $DEV_PATH
-		vagrant rake dt:phpunit
+    rake wp:gulp -- css
 		cd $RETURN_PATH
 	fi
 
 	# build
-	if [[ $1 == build ]] ; then
-		cd $DEV_PATH/src/websites/www.digitaltrends.com
-		gulp clean
-		gulp
+	if [[ $1 == all ]] ; then
+		cd $DEV_PATH
+    rake wp:gulp
+		cd $RETURN_PATH
+	fi
+
+	if [[ $1 == phpunit ]] ; then
+		cd $DEV_PATH
+    rake wp:phpunit
 		cd $RETURN_PATH
 	fi
 }
@@ -97,35 +108,15 @@ alias .5='cd ../../../../../'               # Go back 5 directory levels
 alias .6='cd ../../../../../../'            # Go back 6 directory levels
 alias c='clear'                             # c:            Clear
 
-alias flushDNS='dscacheutil -flushcache'            # flushDNS:
+if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
+  source /etc/profile.d/vte.sh
+fi
 
-extract () {
-	if [ -f $1 ] ; then
-	  case $1 in
-		*.tar.bz2)   tar xjf $1     ;;
-		*.tar.gz)    tar xzf $1     ;;
-		*.bz2)       bunzip2 $1     ;;
-		*.rar)       unrar e $1     ;;
-		*.gz)        gunzip $1      ;;
-		*.tar)       tar xf $1      ;;
-		*.tbz2)      tar xjf $1     ;;
-		*.tgz)       tar xzf $1     ;;
-		*.zip)       unzip $1       ;;
-		*.Z)         uncompress $1  ;;
-		*.7z)        7z x $1        ;;
-		*)     echo "'$1' cannot be extracted via extract()" ;;
-		 esac
-	 else
-		 echo "'$1' is not a valid file"
-	 fi
-}
-
-source ~/digitaltrends/developer/bash_functions
+source $HOME/dev/dtenv/bash_functions
 
 export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/git/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/bin:/usr/sbin:/sbin:~/.npm-global/bin:~/apps"
 
 export NVM_DIR="~/.nvm"
-alias loadrvm='[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"'
 alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
 
 source $ZSH/oh-my-zsh.sh
