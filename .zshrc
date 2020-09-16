@@ -1,23 +1,30 @@
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
 
-export EDITOR=vim
+export EDITOR=nvim
+
+export ZSH_CUSTOM=~/.zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="bira"
+ZSH_THEME="spaceship"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(wd sudo docker)
+plugins=(wd sudo fzf zsh-syntax-highlighting)
 
 #disable update prompt
 DISABLE_UPDATE_PROMPT=true
 SAVEHIST=10000
+
+# kitty
+autoload -Uz compinit
+compinit
+kitty + complete setup zsh | source /dev/stdin
 
 # User configuration
 # Development
@@ -43,16 +50,17 @@ gc() {
 }
 
 dt() {
-	DEV_PATH="$HOME/dev/dtenv"
+	DEV_PATH="$HOME/dev/developer/src/wordpress"
 	RETURN_PATH=$(pwd)
 
 	if [ -z $1 ] ; then
-		echo "☠  No arguments passed."
+		cd $DEV_PATH
+		nvim -S ~/.config/nvim/sessions/dt.vim
 	fi
 
 	if [[ $1 == refresh ]] ; then
 		cd $DEV_PATH
-    rake env:refresh
+		rake env:wp
 		cd $RETURN_PATH
 	fi
 
@@ -60,37 +68,37 @@ dt() {
 		cd $DEV_PATH
 		docker-compose stop
 		cd $RETURN_PATH
-  fi
+	fi
 
 	# build
 	if [[ $1 == js ]] ; then
 		cd $DEV_PATH
-    rake wp:gulp -- js
+		rake wp:npm -- run js
 		cd $RETURN_PATH
 	fi
-  
+
 	if [[ $1 == version ]] ; then
 		cd $DEV_PATH
-    rake wp:gulp -- version
+		rake wp:gulp -- version
 		cd $RETURN_PATH
 	fi
 
 	if [[ $1 == css ]] ; then
 		cd $DEV_PATH
-    rake wp:gulp -- css
+		rake wp:npm -- run css
 		cd $RETURN_PATH
 	fi
 
 	# build
 	if [[ $1 == all ]] ; then
 		cd $DEV_PATH
-    rake wp:gulp
+		rake wp:npm -- run build
 		cd $RETURN_PATH
 	fi
 
 	if [[ $1 == phpunit ]] ; then
 		cd $DEV_PATH
-    rake wp:phpunit
+		rake wp:phpunit
 		cd $RETURN_PATH
 	fi
 }
@@ -108,16 +116,9 @@ alias .5='cd ../../../../../'               # Go back 5 directory levels
 alias .6='cd ../../../../../../'            # Go back 6 directory levels
 alias c='clear'                             # c:            Clear
 
-if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
-  source /etc/profile.d/vte.sh
-fi
+source $HOME/dev/developer/bash_functions
 
-source $HOME/dev/dtenv/bash_functions
-
-export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/git/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/bin:/usr/sbin:/sbin:~/.npm-global/bin:~/apps"
-
-export NVM_DIR="~/.nvm"
-alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
+export PATH="/usr/local/git/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/bin:/usr/sbin:/sbin:~/.npm-global/bin:~/apps:/snap/bin/:$HOME/.cargo/bin:$HOME/.emacs.d/bin:/home/mrchu001/.local/bin"
 
 source $ZSH/oh-my-zsh.sh
 
