@@ -50,17 +50,19 @@ gc() {
 }
 
 dt() {
-	DEV_PATH="$HOME/dev/developer/src/wordpress"
+	DEV_PATH="$HOME/dev/developer"
+	WP_PATH="$HOME/dev/developer/src/wordpress"
 	RETURN_PATH=$(pwd)
 
-	if [ -z $1 ] ; then
+	if [[ $1 == up ]] ; then
 		cd $DEV_PATH
-		nvim -S ~/.config/nvim/sessions/dt.vim
+		rake env:refresh
+		cd $RETURN_PATH
 	fi
 
 	if [[ $1 == refresh ]] ; then
 		cd $DEV_PATH
-		rake env:wp
+		rake env:refresh
 		cd $RETURN_PATH
 	fi
 
@@ -72,32 +74,32 @@ dt() {
 
 	# build
 	if [[ $1 == js ]] ; then
-		cd $DEV_PATH
+		cd $WP_PATH
 		rake wp:npm -- run js
 		cd $RETURN_PATH
 	fi
 
 	if [[ $1 == version ]] ; then
-		cd $DEV_PATH
+		cd $WP_PATH
 		rake wp:gulp -- version
 		cd $RETURN_PATH
 	fi
 
 	if [[ $1 == css ]] ; then
-		cd $DEV_PATH
+		cd $WP_PATH
 		rake wp:npm -- run css
 		cd $RETURN_PATH
 	fi
 
 	# build
 	if [[ $1 == all ]] ; then
-		cd $DEV_PATH
+		cd $WP_PATH
 		rake wp:npm -- run build
 		cd $RETURN_PATH
 	fi
 
 	if [[ $1 == phpunit ]] ; then
-		cd $DEV_PATH
+		cd $WP_PATH
 		rake wp:phpunit
 		cd $RETURN_PATH
 	fi
