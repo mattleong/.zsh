@@ -9,7 +9,7 @@ export ZSH_CUSTOM=~/.zsh
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="spaceship"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
@@ -26,6 +26,9 @@ autoload -Uz compinit
 compinit
 kitty + complete setup zsh | source /dev/stdin
 
+# neovim
+alias v='nvim'
+
 # User configuration
 # Development
 # Git shit
@@ -33,16 +36,16 @@ gl() {
 	if [ $1 ] ; then
 		git log --oneline -"$1" ;
 	 else
-		git log --oneline -20
+		git log --oneline -25
 	 fi
 }
+
+# git
 alias gs='git status -sbu'
 alias ga='git add -A'
-alias gm='git merge'
 alias gd='git diff'
 alias gds='git diff --stat'
 alias gca='git commit --amend'
-alias gbn='git branch -b'
 alias glg='git log --graph --abbrev-commit --decorate --format=format:"%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)" --all'
 
 gc() {
@@ -57,52 +60,25 @@ dt() {
 	if [[ $1 == up ]] ; then
 		cd $DEV_PATH
 		rake env:refresh
-		cd $RETURN_PATH
-	fi
-
-	if [[ $1 == refresh ]] ; then
-		cd $DEV_PATH
-		rake env:refresh
-		cd $RETURN_PATH
 	fi
 
 	if [[ $1 == stop ]] ; then
 		cd $DEV_PATH
 		docker-compose stop
-		cd $RETURN_PATH
 	fi
 
-	# build
-	if [[ $1 == js ]] ; then
+	# build prod
+	if [[ $1 == run ]] ; then
 		cd $WP_PATH
-		rake wp:npm -- run js
-		cd $RETURN_PATH
+		rake wp:npm -- run $2
 	fi
 
-	if [[ $1 == version ]] ; then
-		cd $WP_PATH
-		rake wp:gulp -- version
-		cd $RETURN_PATH
-	fi
-
-	if [[ $1 == css ]] ; then
-		cd $WP_PATH
-		rake wp:npm -- run css
-		cd $RETURN_PATH
-	fi
-
-	# build
-	if [[ $1 == all ]] ; then
-		cd $WP_PATH
-		rake wp:npm -- run build
-		cd $RETURN_PATH
-	fi
-
-	if [[ $1 == phpunit ]] ; then
+	if [[ $1 == tests ]] ; then
 		cd $WP_PATH
 		rake wp:phpunit
-		cd $RETURN_PATH
 	fi
+
+	cd $RETURN_PATH
 }
 
 # mcd: Makes new directory and jumps into it
