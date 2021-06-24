@@ -23,6 +23,10 @@ plugins=(wd sudo fzf zsh-syntax-highlighting)
 DISABLE_UPDATE_PROMPT=true
 SAVEHIST=10000
 
+# asdf
+# source $HOME/.asdf/asdf.sh
+# source $HOME/.asdf/completions/asdf.bash
+
 # kitty
 autoload -Uz compinit
 compinit
@@ -54,35 +58,6 @@ gc() {
 	git commit -m "$1"
 }
 
-dt() {
-	DEV_PATH="$HOME/dev/developer"
-	WP_PATH="$HOME/dev/developer/src/wordpress"
-	RETURN_PATH=$(pwd)
-
-	if [[ $1 == up ]] ; then
-		cd $DEV_PATH
-		rake env:refresh
-	fi
-
-	if [[ $1 == stop ]] ; then
-		cd $DEV_PATH
-		docker-compose stop
-	fi
-
-	# build prod
-	if [[ $1 == run ]] ; then
-		cd $WP_PATH
-		rake wp:npm -- run $2
-	fi
-
-	if [[ $1 == tests ]] ; then
-		cd $WP_PATH
-		rake wp:phpunit
-	fi
-
-	cd $RETURN_PATH
-}
-
 # mcd: Makes new directory and jumps into it
 mcd () { mkdir -p "$1" && cd "$1"; }
 
@@ -97,10 +72,12 @@ alias .6='cd ../../../../../../'            # Go back 6 directory levels
 alias c='clear'                             # c:            Clear
 
 export DEV_ENV_PATH=/home/mrchu001/dev/developer-ng
+export DEV_DEFAULT_STACK=wordpress
+source $DEV_ENV_PATH/dev.sh
 
 source $HOME/dev/developer/bash_functions
 export DENO_INSTALL="/home/mrchu001/.deno"
-export PATH="/usr/local/git/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/bin:/usr/sbin:/sbin:~/.npm-global/bin:~/apps:/snap/bin/:$HOME/.cargo/bin:$HOME/.emacs.d/bin:/home/mrchu001/.local/bin:/home/mrchu001/.nimble/bin:$DENO_INSTALL/bin"
+export PATH="/usr/local/bin:/usr/bin:/usr/local/sbin:/bin:/usr/sbin:/sbin:$HOME/.npm-global/bin:/snap/bin/:$HOME/.cargo/bin:/home/mrchu001/.local/bin:$DENO_INSTALL/bin:$HOME/local/nvim/bin"
 
 source $ZSH/oh-my-zsh.sh
 
